@@ -20,7 +20,7 @@ package com.waz.zclient.common.controllers
 import android.content.Context
 import com.waz.api.impl.ErrorResponse
 import com.waz.model._
-import com.waz.service.ZMessaging
+import com.waz.service.{IntegrationsService, ZMessaging}
 import com.waz.threading.Threading
 import com.waz.utils.events.Signal
 import com.waz.zclient.utils.ContextUtils.getString
@@ -36,12 +36,13 @@ class IntegrationsController(implicit injector: Injector, context: Context) exte
   import Threading.Implicits.Background
 
   private lazy val zms = inject[Signal[ZMessaging]]
-  private lazy val integrations = inject[Signal[ZMessaging]].map(_.integrations)
+  private lazy val integrations = inject[Signal[IntegrationsService]]
+
   private implicit lazy val uiStorage = inject[UiStorage]
 
   lazy val userAccs = inject[UserAccountsController]
 
-  val searchQuery = Signal[String]("")
+  val searchQuery = Signal(Option.empty[String])
 
   def searchIntegrations = for {
     in        <- integrations
